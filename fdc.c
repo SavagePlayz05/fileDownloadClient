@@ -110,6 +110,27 @@ int main(int argc, char *argv[]){
             fgets(output, 100, s);
             printf("%s\n", output);
         }
-
+        if (strncmp(input, "HASH ", 5) == 0) {
+            strncpy(fileName, input + 5, sizeof(fileName));
+            //strip newline so it doesn't bug out file name
+            fileName[strcspn(fileName, "\n")] = 0;
+            fprintf(s, "SIZE %s", fileName);
+            fgets(output, 100, s);
+            //turn str into INT
+            sscanf(output, "+OK %d", &fileSize);
+            //create buffer
+            char buffer[fileSize];
+            
+            
+            //send HASH command
+            fprintf(s, "%s", input);
+            //get rid of +OK line
+            fgets(output, 100, s);
+            //read the data from the server, store in buffer
+            fread(buffer, 1, fileSize, s);
+            char *hashed = md5(buffer,fileSize);
+            
+            printf("%s", hashed);
+        }
 }
 }
